@@ -1,3 +1,4 @@
+const log = console.log;
 const _ = {};
 const MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
 
@@ -24,5 +25,40 @@ _.map = function (data, iteratee) {
   return newList;
 };
 
-console.log(_.map([1, 2, 3], (v) => v * 2));
-console.log(_.map({ a: 3, b: 2, c: 1 }, (v) => v * 2));
+_.map([1, 2, 3], (v) => v * 2);
+_.map({ a: 3, b: 2, c: 1 }, (v) => v * 2);
+
+// this를 바인딩하고 싶은 경우, 함수를 호출할때 보조함수에서 해주면된다. 바인딩 하는 로직(부하가 있음)이 굳이 map안에 들어가 있을 필요가 없다.
+_.map(
+  [1, 2, 3],
+  function (v) {
+    return v * this;
+  }.bind(5)
+);
+
+_.identity = function (v) {
+  return v;
+};
+_.idtt = _.identity;
+
+_.values = function (list) {
+  return _.map(list, _.identity);
+};
+
+// map으로 리스트를 돌면서 값을 꺼내려면 map(list, (v)=>v)라고 써야한다. map은 순회만 하는 함수이기 때문에 iteratee를 넣어서 값을 추출까지 해야하는데
+// 그때마다 v=>v를 하면 불편하다.
+// _.value는 map에 identity를 조합하여 쉽게 사용한다
+_.values({ a: 1, b: 2 });
+
+// 굳이 왜 똑같은 함수가 다른이름으로 있어야 할까?
+// 아마도 함수이름만 보고 개발자의 의도를 표현하려면 똑같은 기능을 하더라도 의도를 나태낼수 있는 이름으로 표현하는게 좋을 것
+_.args0 = _.identity;
+_.args1 = function (a, b) {
+  return b;
+};
+_.keys = function (list) {
+  return _.map(list, _.args1);
+};
+
+_.keys([23, 321, 123, 123]);
+_.keys({ age: 123, name: 'kwidonw', job: 'developer' });
