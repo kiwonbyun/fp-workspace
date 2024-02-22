@@ -1,4 +1,6 @@
 const log = console.log;
+const testArr = [100, 200, 300];
+const testObj = { age: 123, name: 'kwidonw', job: 'developer' };
 const _ = {};
 const MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
 
@@ -60,5 +62,50 @@ _.keys = function (list) {
   return _.map(list, _.args1);
 };
 
-_.keys([23, 321, 123, 123]);
-_.keys({ age: 123, name: 'kwidonw', job: 'developer' });
+_.keys(testArr);
+_.keys(testObj);
+
+_.each = function (data, iteratee) {
+  if (isArrayLike(data)) {
+    for (let i = 0, len = data.length; i < len; i++) {
+      iteratee(data[i], i, data);
+    }
+  } else {
+    for (let key in data) {
+      if (data.hasOwnProperty(key)) iteratee(data[key], key, data);
+    }
+  }
+  return data;
+};
+
+// _.each([1, 2, 3], log);
+// _.each(testObj, log);
+
+function bloop(newData, body) {
+  return function (data, iteratee) {
+    let result = newData(data);
+    if (isArrayLike(data)) {
+      for (let i = 0; i < data.length; i++) {
+        body(iteratee(data[i], i, data), result);
+      }
+    } else {
+      for (let key in data) {
+        if (data.hasOwnProperty(key)) {
+          body(iteratee(data[key], key, data), result);
+        }
+      }
+    }
+    return result;
+  };
+}
+
+_.map = bloop(
+  () => [],
+  (val, obj) => obj.push(val)
+);
+
+// log(_.map(testArr, (v) => v * 3));
+
+_.each = bloop(_.idtt, () => {});
+
+_.each(testObj, log);
