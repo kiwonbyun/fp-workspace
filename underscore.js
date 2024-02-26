@@ -151,5 +151,38 @@ _.reverse = function (list) {
   return _.toArray(list).reverse();
 };
 
-log(_.reverse([1, 2, 3, 4]));
-log(_.reverse({ 0: 1, 1: 10, 2: 100, 3: 1000, length: 4 }));
+_.rester = function (func, num) {
+  return function () {
+    return func.apply(null, _.rest(arguments, num));
+  };
+};
+
+function sum(a, b, c, d) {
+  return (a || 0) + (b || 0) + (c || 0) + (d || 0);
+}
+
+_.if = function (validator, func, alter) {
+  return function () {
+    return validator.apply(null, arguments)
+      ? func.apply(null, arguments)
+      : alter && alter.apply(null, arguments);
+  };
+};
+
+function sub(a, b) {
+  return a - b;
+}
+var sub2 = _.if(
+  (a, b) => a >= b,
+  sub,
+  () => new Error('a가 b보다 작습니다')
+);
+log(sub2(2, 5));
+
+var diff = _.if(
+  (a, b) => a >= b,
+  sub,
+  (a, b) => sub(b, a)
+);
+
+log(diff(2, 5));
