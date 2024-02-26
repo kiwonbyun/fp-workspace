@@ -185,4 +185,26 @@ var diff = _.if(
   (a, b) => sub(b, a)
 );
 
+_.safety = _.width_validator = _.if;
 log(diff(2, 5));
+
+_.toArray2 = _.if(Array.isArray, _.idtt, _.values);
+
+_.constant = function (v) {
+  return function () {
+    return v;
+  };
+};
+
+var square = _.safety(
+  (a) => toString.call(a) === '[object Number]',
+  (a) => a * a,
+  _.constant(0)
+);
+
+_.isNumber = function (a) {
+  return toString.call(a) === '[object Number]';
+};
+var square = _.safety(_.isNumber, (a) => a * a, _.constant(0));
+// log(square(5));
+// log(square('rksk'));
